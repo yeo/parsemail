@@ -20,6 +20,7 @@ const contentTypeTextHtml = "text/html"
 const contentTypeTextPlain = "text/plain"
 const contentTypeOctetStream = "application/octet-stream"
 const contentTypeImageJpeg = "image/jpeg"
+const contentTypeImageJpeg = "image/png"
 
 // Parse an email message read from io.Reader into parsemail.Email struct
 func Parse(r io.Reader) (email Email, err error) {
@@ -55,6 +56,7 @@ func Parse(r io.Reader) (email Email, err error) {
 
 	case contentTypeOctetStream:
 	case contentTypeImageJpeg:
+	case contentTypeImagePng:
 		email.Attachments, err = parseAttachmentOnlyEmail(msg.Body, msg.Header)
 
 	default:

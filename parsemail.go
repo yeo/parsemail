@@ -56,9 +56,7 @@ func Parse(r io.Reader) (email Email, err error) {
 		message, _ := ioutil.ReadAll(msg.Body)
 		email.HTMLBody = strings.TrimSuffix(string(message[:]), "\n")
 
-	case contentTypeOctetStream:
-	case contentTypeImageJpeg:
-	case contentTypeImagePng:
+	case contentTypeOctetStream, contentTypeImageJpeg, contentTypeImagePng:
 		email.Attachments, err = parseAttachmentOnlyEmail(msg.Body, msg.Header)
 
 	default:

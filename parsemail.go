@@ -40,7 +40,7 @@ func Parse(r io.Reader) (email Email, err error) {
 		return
 	}
 
-	fmt.Println("Found Content Type", ContentType)
+	fmt.Println("Found Content Type", contentType)
 
 	switch contentType {
 	case contentTypeMultipartMixed:

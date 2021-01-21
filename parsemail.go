@@ -40,6 +40,8 @@ func Parse(r io.Reader) (email Email, err error) {
 		return
 	}
 
+	fmt.Println("Found Content Type", ContentType)
+
 	switch contentType {
 	case contentTypeMultipartMixed:
 		email.TextBody, email.HTMLBody, email.Attachments, email.EmbeddedFiles, err = parseMultipartMixed(msg.Body, params["boundary"])

@@ -638,6 +638,44 @@ So, "Hello".`,
 	}
 }
 
+func TestParseMultiPartDiffEncoding(t *testing.T) {
+	content := `To: dest@foo.com
+From: sourc@foo.com
+Subject: dauhu
+Content-Type: multipart/alternative; boundary="0000000000009ed29305bc0fc020"
+
+--0000000000009ed29305bc0fc020
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+
+TG92ZSB5b3Vyc2VsZiBpbiBvcmRlciB0byBsb3ZlIG90aGVyLiBMb3ZlIGxpa2UgeW91IG5ldmVy
+IGJlZW4gaHVydC4gWcOqdQ0KbmjGsCBDaMO6YSB5w6p1LiBLaMO0bmcgY+G6p24gxJHhu4FuIMSR
+w6FwLg0K
+--0000000000009ed29305bc0fc020
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: base64
+
+TG92ZSB5b3Vyc2VsZiBpbiBvcmRlciB0byBsb3ZlIG90aGVyLiBMb3ZlIGxpa2UgeW91IG5ldmVy
+IGJlZW4gaHVydC4gWcOqdSBuaMawIENow7phIHnDqnUuIEtow7RuZyBj4bqnbiDEkeG7gW4gxJHD
+oXAuwqANCg==
+--0000000000009ed29305bc0fc020--
+`
+	e, err := Parse(strings.NewReader(content))
+
+	if err != nil {
+		t.Errorf("TestParseMultiPartDiffEncoding Error: %v", err)
+	}
+
+	h := "Love yourself in order to love other. Love like you never been hurt. Yêu như Chúa yêu. Không cần đền đáp.\u00a0\r"
+	if e.HTMLBody != h {
+		t.Errorf("\nTestParseMultiPartDiffEncoding Error: HTMLBody not match.\nEpxect:\n%s\nGot:\n%s", h, e.HTMLBody)
+
+		fmt.Printf("e: %q\n", h)
+		fmt.Printf("g: %q\n", e.HTMLBody)
+	}
+
+}
+
 func parseDate(in string) time.Time {
 	out, err := time.Parse(time.RFC1123Z, in)
 	if err != nil {

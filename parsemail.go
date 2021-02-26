@@ -264,6 +264,9 @@ func parseMultipartAlternative(msg io.Reader, boundary string) (textBody, htmlBo
 		}
 
 		contentType, params, err := mime.ParseMediaType(part.Header.Get("Content-Type"))
+
+		fmt.Println("Found content type", contentType, params)
+
 		if err != nil {
 			return textBody, htmlBody, embeddedFiles, err
 		}
@@ -456,6 +459,7 @@ func decodeContent(content io.Reader, encoding string) (io.Reader, error) {
 	switch encoding {
 	case "base64":
 		decoded := base64.NewDecoder(base64.StdEncoding, content)
+
 		b, err := ioutil.ReadAll(decoded)
 		if err != nil {
 			return nil, err

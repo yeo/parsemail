@@ -436,6 +436,32 @@ So, "Hello".`,
 			htmlBody:  "<div dir=\"ltr\">👍</div>",
 			textBody:  "👍",
 		},
+
+		15: {
+			contentType: "text/html; charset=utf-8",
+			mailData:    quotedPrintableContent,
+			subject:     "Saying Hello",
+			from: []mail.Address{
+				{
+					Name:    "John Doe",
+					Address: "jdoe@machine.example",
+				},
+			},
+			sender: mail.Address{
+				Name:    "Michael Jones",
+				Address: "mjones@machine.example",
+			},
+			to: []mail.Address{
+				{
+					Name:    "Mary Smith",
+					Address: "mary@example.net",
+				},
+			},
+			messageID: "1234@local.machine.example",
+			date:      parseDate("Fri, 21 Nov 1997 09:55:06 -0600"),
+			htmlBody:  "These symbols will be escaped: √ = \t",
+			textBody:  "",
+		},
 	}
 
 	for index, td := range testData {
@@ -673,7 +699,6 @@ oXAuwqANCg==
 		fmt.Printf("e: %q\n", h)
 		fmt.Printf("g: %q\n", e.HTMLBody)
 	}
-
 }
 
 func parseDate(in string) time.Time {
@@ -1061,4 +1086,17 @@ Content-Transfer-Encoding: base64
 PGRpdiBkaXI9Imx0ciI+8J+RjTwvZGl2Pgo=
 
 --000000000000ab2e1f05a26de586--
+`
+
+var quotedPrintableContent = `MIME-Version: 1.0
+From: John Doe <jdoe@machine.example>
+Sender: Michael Jones <mjones@machine.example>
+To: Mary Smith <mary@example.net>
+Subject: Saying Hello
+Date: Fri, 21 Nov 1997 09:55:06 -0600
+Message-ID: <1234@local.machine.example>
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+These symbols will be escaped: =E2=88=9A =3D =09
 `

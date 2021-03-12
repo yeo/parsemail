@@ -8,6 +8,8 @@ import (
 	"io/ioutil"
 	"mime"
 	"mime/multipart"
+	"mime/quotedprintable"
+
 	"net/mail"
 	"strings"
 	"time"
@@ -475,6 +477,16 @@ func decodeContent(content io.Reader, encoding string) (io.Reader, error) {
 		return bytes.NewReader(dd), nil
 	case "8bit":
 		return content, nil
+
+	case "quoted-printable":
+		decoded := quotedprintable.NewReader(content)
+
+		b, err := ioutil.ReadAll(decoded)
+		if err != nil {
+			return nil, fmt.Errorf("Cannot parse quoted-printable: %v", err)
+		}
+
+		return bytes.NewReader(b), nil
 	case "":
 		return content, nil
 	default:

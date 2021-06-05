@@ -42,8 +42,6 @@ func Parse(r io.Reader) (email Email, err error) {
 		return
 	}
 
-	fmt.Println("Found Content Type", contentType)
-
 	switch contentType {
 	case contentTypeMultipartMixed:
 		email.TextBody, email.HTMLBody, email.Attachments, email.EmbeddedFiles, err = parseMultipartMixed(msg.Body, params["boundary"])
@@ -84,8 +82,6 @@ func Parse(r io.Reader) (email Email, err error) {
 
 	case contentTypeOctetStream, contentTypeImageJpeg, contentTypeImagePng:
 		email.Attachments, err = parseAttachmentOnlyEmail(msg.Body, msg.Header)
-
-		fmt.Println("attachments= ", email.Attachments, err)
 
 	default:
 		email.Content, err = decodeContent(msg.Body, msg.Header.Get("Content-Transfer-Encoding"))
@@ -266,8 +262,6 @@ func parseMultipartAlternative(msg io.Reader, boundary string) (textBody, htmlBo
 		}
 
 		contentType, params, err := mime.ParseMediaType(part.Header.Get("Content-Type"))
-
-		fmt.Println("Found content type", contentType, params)
 
 		if err != nil {
 			return textBody, htmlBody, embeddedFiles, err

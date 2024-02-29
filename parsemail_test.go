@@ -1,10 +1,12 @@
 package parsemail
 
 import (
+	"bytes"
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"net/mail"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -274,12 +276,12 @@ So, "Hello".`,
 			messageID:   "1234@local.machine.example",
 			date:        parseDate("Fri, 21 Nov 1997 09:55:06 -0600"),
 			contentType: `image/jpeg; x-unix-mode=0644; name="image.gif"`,
-			content: `GIF89a;`,
+			content:     `GIF89a;`,
 			attachments: []attachmentData{
 				{
 					filename:    "image.gif",
 					contentType: "application/octet-stream",
-					data: `GIF89a;`, // base64 decode of "R0lGODlhAQE7",
+					data:        `GIF89a;`, // base64 decode of "R0lGODlhAQE7",
 				},
 			},
 		},
@@ -701,6 +703,44 @@ oXAuwqANCg==
 	}
 }
 
+func TestParseAttachment(t *testing.T) {
+	contents, _ := os.ReadFile("sample.eml")
+	r := bytes.NewReader(contents)
+
+	e, err := Parse(r)
+
+	if err != nil {
+		t.Errorf("[Failed to parse attachment. Expected: no error. Got: %s", err)
+	}
+
+	if len(e.Attachments) == 0 {
+		t.Errorf("[Failed to parse attachment. Expected: 1 file, Got: 0")
+	}
+
+	if e.Attachments[0].Filename != "vmcache.pdf" {
+		t.Errorf("[Failed to parse attachment filename. Expected: vmcache.pdf, Got: %s", e.Attachments[0].Filename)
+	}
+}
+
+func TestParseAttachment2(t *testing.T) {
+	contents, _ := os.ReadFile("sample2.eml")
+	r := bytes.NewReader(contents)
+
+	e, err := Parse(r)
+
+	if err != nil {
+		t.Errorf("[Failed to parse attachment. Expected: no error. Got: %s", err)
+	}
+
+	if len(e.Attachments) == 0 {
+		t.Errorf("[Failed to parse attachment. Expected: 1 file, Got: 0")
+	}
+
+	if e.Attachments[0].Filename != "draft - 2027-02-19T23_00_00.000Z.pdf" {
+		t.Errorf("[Failed to parse attachment filename. Expected: draft - 2027-02-19T23_00_00.000Z.pdf, Got: %s", e.Attachments[0].Filename)
+	}
+}
+
 func parseDate(in string) time.Time {
 	out, err := time.Parse(time.RFC1123Z, in)
 	if err != nil {
@@ -922,8 +962,8 @@ Message-ID: <5678.21-Nov-1997@example.com>
 Hi everyone.
 `
 
-//todo: not yet implemented in net/mail
-//once there is support for this, add it
+// todo: not yet implemented in net/mail
+// once there is support for this, add it
 var rfc5322exampleA13 = `From: Pete <pete@silly.example>
 To: A Group:Ed Jones <c@a.test>,joe@where.test,John <jdoe@one.test>;
 Cc: Undisclosed recipients:;
@@ -933,7 +973,7 @@ Message-ID: <testabcd.1234@silly.example>
 Testing.
 `
 
-//we skipped the first message bcause it's the same as A 1.1
+// we skipped the first message bcause it's the same as A 1.1
 var rfc5322exampleA2a = `From: Mary Smith <mary@example.net>
 To: John Doe <jdoe@machine.example>
 Reply-To: "Mary Smith: Personal Account" <smith@home.example>
